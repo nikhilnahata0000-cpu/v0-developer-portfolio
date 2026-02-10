@@ -1,18 +1,28 @@
-"use client"
-
 import { BentoCard } from "./bento-card"
 
 const DAYS = 52 * 7
 const LEVELS = [0, 1, 2, 3, 4]
 
+// Deterministic pseudo-random number generator (mulberry32) to avoid hydration mismatch
+function seededRandom(seed: number) {
+  return function () {
+    seed |= 0
+    seed = (seed + 0x6d2b79f5) | 0
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed)
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
 function generateContributions() {
+  const rand = seededRandom(42)
   const contributions: number[] = []
   for (let i = 0; i < DAYS; i++) {
-    const rand = Math.random()
-    if (rand < 0.3) contributions.push(0)
-    else if (rand < 0.5) contributions.push(1)
-    else if (rand < 0.7) contributions.push(2)
-    else if (rand < 0.9) contributions.push(3)
+    const r = rand()
+    if (r < 0.3) contributions.push(0)
+    else if (r < 0.5) contributions.push(1)
+    else if (r < 0.7) contributions.push(2)
+    else if (r < 0.9) contributions.push(3)
     else contributions.push(4)
   }
   return contributions
